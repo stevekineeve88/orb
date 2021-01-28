@@ -12,11 +12,12 @@ class Permutation:
         self.__suffixes = []
         self.__contains = []
         self.__regexes = []
+        self.__excludes = []
 
     @timeout()
     def calculate(self, sequence_length: int):
         if sequence_length < 0 or sequence_length > len(self.__characters):
-            raise Exception("Sequence length is out of bounds.")
+            raise Exception("Word length is out of bounds.")
         difference = len(self.__characters) - sequence_length
         self.__result = self.__get_permutations("", self.__characters, {}, difference)
 
@@ -34,6 +35,9 @@ class Permutation:
 
     def set_regexes(self, regexes: list):
         self.__regexes = regexes
+
+    def set_excludes(self, excludes: list):
+        self.__excludes = excludes
 
     def __has_prefixes(self, characters: str) -> bool:
         prefixes = self.__prefixes
@@ -59,22 +63,31 @@ class Permutation:
     def __has_regexes(self, characters: str) -> bool:
         regexes = self.__regexes
         for regex in regexes:
-            if len(regex) != len(characters):
-                continue
-            is_regex = True
-            for i in range(0, len(regex)):
-                if regex[i] != characters[i] and regex[i] != self.__SEPARATOR:
-                    is_regex = False
-                    break
-            if is_regex:
+            if self.__is_matching(characters, regex):
                 return True
         return len(regexes) == 0
+
+    def __not_has_excludes(self, characters: str) -> bool:
+        excludes = self.__excludes
+        for regex in excludes:
+            if self.__is_matching(characters, regex):
+                return False
+        return True
+
+    def __is_matching(self, characters: str, regex: str) -> bool:
+        if len(regex) != len(characters):
+            return False
+        for i in range(0, len(regex)):
+            if regex[i] != characters[i] and regex[i] != self.__SEPARATOR:
+                return False
+        return True
 
     def __is_allowed(self, characters: str) -> bool:
         return self.__has_prefixes(characters) and \
             self.__has_suffixes(characters) and \
             self.__has_contains(characters) and \
-            self.__has_regexes(characters)
+            self.__has_regexes(characters) and \
+            self.__not_has_excludes(characters)
 
     def __get_permutations(self, subset: str, characters: str, permutations: dict, difference: int) -> dict:
         letters_length = len(characters)
