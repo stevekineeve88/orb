@@ -7,22 +7,31 @@ class Permutation:
 
     def __init__(self, characters: str):
         self.__result: dict = {}
-        self.__characters = characters
+        self.__characters = list(characters)
+        character_dict = {}
+        for character in characters:
+            character_dict[character] = (character_dict[character] + 1) if character in character_dict else 1
+        self.__character_dict = character_dict
         self.__prefixes = []
         self.__suffixes = []
         self.__contains = []
         self.__regexes = []
         self.__excludes = []
 
-    @timeout()
     def calculate(self, sequence_length: int):
-        if sequence_length < 0 or sequence_length > len(self.__characters):
-            raise Exception("Word length is out of bounds.")
-        difference = len(self.__characters) - sequence_length
-        self.__result = self.__get_permutations("", self.__characters, {}, difference)
+        n = len(self.__characters)
+        self.__get_permutations(self.__characters, "", n, sequence_length)
 
     def get_result(self) -> dict:
         return self.__result
+
+    def get_result_set(self, offset: int, limit: int) -> dict:
+        keys = list(self.__result.keys())
+        ranged_keys = keys[offset: offset + limit]
+        set_keys = {}
+        for key in ranged_keys:
+            set_keys[key] = self.__result[key]
+        return set_keys
 
     def set_prefixes(self, prefixes: list):
         self.__prefixes = prefixes
@@ -89,18 +98,21 @@ class Permutation:
             self.__has_regexes(characters) and \
             self.__not_has_excludes(characters)
 
-    def __get_permutations(self, subset: str, characters: str, permutations: dict, difference: int) -> dict:
-        letters_length = len(characters)
-        if letters_length == difference and self.__is_allowed(subset):
-            if subset in permutations.keys():
-                permutations[subset] = permutations[subset] + 1
-            else:
-                permutations[subset] = 1
-        for i in range(0, letters_length):
-            permutations.update(self.__get_permutations(
-                subset + characters[i],
-                characters[0:i] + characters[i + 1: letters_length],
-                permutations,
-                difference
-            ))
-        return permutations
+    def __check_correct(self, prefix: str) -> bool:
+        prefix_dict = {}
+        for character in prefix:
+            prefix_dict[character] = (prefix_dict[character] + 1) if character in prefix_dict else 1
+            if prefix_dict[character] > self.__character_dict[character]:
+                return False
+        return True
+
+    def __get_permutations(self, characters, prefix, n, k):
+        if k == 0:
+            if self.__is_allowed(prefix):
+                self.__result[prefix] = (self.__result[prefix] + 1) if prefix in self.__result else 1
+            return
+
+        for i in range(n):
+            new_prefix = prefix + characters[i]
+            if self.__check_correct(new_prefix):
+                self.__get_permutations(characters, new_prefix, n, k - 1)

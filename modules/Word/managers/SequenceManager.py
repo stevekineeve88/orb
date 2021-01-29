@@ -14,3 +14,7 @@ class SequenceManager:
         permutation.set_excludes(kwargs.get("excludes") or [])
         permutation.calculate(sequence_length)
         return permutation
+
+    @classmethod
+    def __is_complex(cls, n: int, r: int) -> bool:
+        pass
