@@ -14,7 +14,7 @@ class SequenceUnitTest(unittest.TestCase):
         permutation = self.sequence_manager.search_permutations(characters)
         self.assertEqual(math.factorial(len(characters)), len(permutation.get_result()))
 
-    def test_get_permutations_too_long_raises_exception(self):
+    def test_get_permutations_too_complex_raises_exception(self):
         characters = "AAAAAAAAAAAAA"
         with self.assertRaises(Exception) as context:
             self.sequence_manager.search_permutations(characters)
