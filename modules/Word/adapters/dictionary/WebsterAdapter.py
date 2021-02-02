@@ -6,7 +6,7 @@ class WebsterAdapter(DictionaryAdapter):
         super().__init__()
         self.base_url = "https://www.merriam-webster.com"
 
-    def is_word(self, word: str):
-        return self.parse_html(
-            f'{self.base_url}/dictionary/{word}'
-        ).find("h1", {"class": "mispelled-word"}) is None
+    def is_word(self, word: str) -> bool:
+        html = self.parse_html(f'{self.base_url}/dictionary/{word}')
+        return html.find("h1", {"class": "mispelled-word"}) is None and \
+            html.find("div", {"class": "words_fail_us_cont"}) is None

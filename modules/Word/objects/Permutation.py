@@ -1,6 +1,3 @@
-from decorators.timeout import timeout
-
-
 class Permutation:
 
     __SEPARATOR = "-"
