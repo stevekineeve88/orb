@@ -12,7 +12,9 @@ class DictionaryManager:
 
     def is_word(self, word: str) -> bool:
         word = re.sub(r"^\W+|\W+$", "", word)
-        if not self.dictionary_adapter.is_english(word) or self.dictionary_adapter.contains_number(word):
+        if not self.dictionary_adapter.is_english(word) or \
+                self.dictionary_adapter.contains_number(word) or \
+                len(word) == 0:
             return False
         result = self.dictionary_repo.load_word(word.upper())
         if len(result.get_data()) > 0:
