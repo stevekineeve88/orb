@@ -1,6 +1,4 @@
-import json
-
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify
 
 from modules.Word.managers.DictionaryManager import DictionaryManager
 
