@@ -53,3 +53,49 @@ class DictionaryRepo:
         finally:
             cursor.close()
         return result
+
+    def load_words(self, characters: str, word_length: int, limit: int, offset: int, **kwargs):
+        character_search = {}
+        for character in characters:
+            if character not in character_search.keys():
+                character_search[character] = f'%{character}%'
+                continue
+            character_search[character] += f'%{character}%'
+        result = Result()
+        cursor = self.db_connection.get_cursor()
+        values = {
+            word_length: word_length
+        }
+        try:
+            cursor.execute(
+                f"""
+                    SELECT
+                        "Word_Words".id,
+                        "Word_Words".word,
+                        "Word_Words".category
+                    FROM "Word_Words"
+                    WHERE LENGTH("Word_Words".word) = %(word_length)s
+                    AND {self.__build_character_search()}
+                """
+            )
+            data = cursor.fetchall()
+            result.set_data(data)
+        except Exception as e:
+            result.set_message(str(e))
+            result.set_status(False)
+        finally:
+            cursor.close()
+        return result
+
+    @classmethod
+    def __build_character_search(cls, characters: str) -> str:
+        character_search = {}
+        for character in characters:
+            if character not in character_search.keys():
+                character_search[character] = f'%{character}%'
+                continue
+            character_search[character] += f'%{character}%'
+        character_like_conditions = []
+        for key, value in character_search.items():
+            character_like_conditions.append(f'"Word_Words".word LIKE {value}')
+        return " OR ".join(character_like_conditions)

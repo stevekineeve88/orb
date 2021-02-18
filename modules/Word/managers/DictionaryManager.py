@@ -1,7 +1,10 @@
 import re
+
+from modules.Util.result import Result
 from modules.Word.adapters.dictionary.WebsterAdapter import WebsterAdapter
 from modules.Word.adapters.abstracts.DictionaryAdapter import DictionaryAdapter
 from modules.Word.objects.Word import Word
+from modules.Word.objects.WordArg import WordArg
 from modules.Word.repositories.dictionary_repo import DictionaryRepo
 
 
@@ -20,6 +23,9 @@ class DictionaryManager:
         if len(result.get_data()) > 0:
             return True
         return self.__create_word(word) is not None
+
+    def get_words(self, args: WordArg, word_length: int) -> Result:
+        pass
 
     def __create_word(self, word: str) -> Word or None:
         is_word = self.dictionary_adapter.is_word(word)

@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 from modules.Util.result import Result
 from modules.Word.managers.DictionaryManager import DictionaryManager
+from modules.Word.objects.Word import Word
 from modules.Word.repositories.dictionary_repo import DictionaryRepo
 
 
@@ -25,3 +26,13 @@ class SequenceUnitTest(unittest.TestCase):
         self.assertTrue(self.dictionary_manager.is_word(correct_word))
         self.assertFalse(self.dictionary_manager.is_word(wrong_word))
         self.dictionary_repo.insert_word.assert_called_once()
+
+    def test_get_dictionary_words_with_prefix_returns_words(self):
+        sequence = "MPUJ"
+        prefixes = ["JU"]
+        result = Result()
+        result.set_data([
+            Word(1, "JUMP", "J")
+        ])
+        self.dictionary_repo.load_words = MagicMock(return_value=result)
+        result = self.dictionary_manager.get_words()
