@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Flask app</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    </head>
+    <body>
+        <div class="content">
+            <div>
+                <div>
+                    <h3>Word Crossy Cheater</h3>
+                </div>
+                <div>
+                    <input id="CharacterInput" placeholder="enter characters...">
+                </div>
+                <p></p>
+                <div>
+                    <select id="SizeSelection">
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                    </select>
+                </div>
+                <div class="text-list">
+                    <p id="OutputWords"></p>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(document).on('keypress',function(e) {
+            if(e.which === 13) {
+                let characters = $("#CharacterInput").val();
+                let wordSize = $("#SizeSelection").val();
+                $.ajax({
+                    url : '/search/'+characters+'/'+wordSize,
+                    type : 'GET',
+                    dataType:'json',
+                    success : function(data) {
+                        let content = data["content"]
+                        $("#OutputWords").text(content.join(", "))
+                    },
+                    error : function(request,error)
+                    {
+                        alert("Something went wrong");
+                    }
+                });
+            }
+        });
+    });
+</script>

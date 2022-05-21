@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: docker-resources/Dockerfile_Server_Local
+    ports:
+      - "5000:5000"
+    networks:
+      - projectx
+    env_file:
+      - docker-resources/env/server.env
+    volumes:
+      - "./server/modules:/code/server/modules"
+      - "./server/index.py:/code/index.py"
+      - "./server/words.json:/code/server/words.json"
+      - "./templates:/code/templates"
+      - "./static:/code/static"
+    command: [ "python", "-m", "flask", "run" ]
+
+networks:
+  projectx:
